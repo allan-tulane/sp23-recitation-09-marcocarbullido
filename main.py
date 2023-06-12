@@ -12,8 +12,26 @@ def shortest_shortest_path(graph, source):
       a dict where each key is a vertex and the value is a tuple of
       (shortest path weight, shortest path number of edges). See test case for example.
     """
-    ### TODO
-    pass
+    dist = {v: float('inf') for v in graph}
+    edges = {v: 0 for v in graph}
+    dist[source] = 0
+    pq = [(0, 0, source)]
+
+    while pq:
+        d, e, u = heappop(pq)
+        if d > dist[u]:
+            continue
+
+        for v, weight in graph[u]:
+            new_distance = d + weight
+            new_edges = e + 1
+
+            if new_distance < dist[v] or (new_distance == dist[v] and new_edges < edges[v]):
+                dist[v] = new_distance
+                edges[v] = new_edges
+                heappush(pq, (new_distance, new_edges, v))
+
+    return {v: (dist[v], edges[v]) for v in graph}
     
 def test_shortest_shortest_path():
 
@@ -40,8 +58,20 @@ def bfs_path(graph, source):
       a dict where each key is a vertex and the value is the parent of 
       that vertex in the shortest path tree.
     """
-    ###TODO
-    pass
+    visited = set()
+    queue = deque([(source, None)])
+    parents = {}
+
+    while queue:
+        node, parent = queue.popleft()
+        if node not in visited:
+            visited.add(node)
+            parents[node] = parent
+            for neighbor in graph[node]:
+                if neighbor not in visited:
+                    queue.append((neighbor, node))
+
+    return parents
 
 def get_sample_graph():
      return {'s': {'a', 'b'},
@@ -65,8 +95,15 @@ def get_path(parents, destination):
       The shortest path from the source node to this destination node 
       (excluding the destination node itself). See test_get_path for an example.
     """
-    ###TODO
-    pass
+    path = []
+    node = destination
+
+    while node is not None:
+        path.append(node)
+        node = parents[node]
+
+    path = path[::-1][:-1]
+    return ''.join(path)
 
 def test_get_path():
     graph = get_sample_graph()
